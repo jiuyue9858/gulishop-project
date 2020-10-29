@@ -1,4 +1,5 @@
 <template>
+  <!-- 头部 -->
   <header class="header">
     <!-- 头部的第一行 -->
     <div class="top">
@@ -7,8 +8,10 @@
           <p>尚品汇欢迎您！</p>
           <p>
             <span>请</span>
-            <a href="###">登录</a>
-            <a href="###" class="register">免费注册</a>
+            <router-link to="/login">登录</router-link>
+            <!-- <a href="###">登录</a> -->
+            <router-link to="/register" class="register">免费注册</router-link>
+            <!-- <a href="###" class="register">免费注册</a> -->
           </p>
         </div>
         <div class="typeList">
@@ -26,18 +29,22 @@
     <!--头部第二行 搜索区域-->
     <div class="bottom">
       <h1 class="logoArea">
-        <a class="logo" title="尚品汇" href="###" target="_blank">
+        <router-link to="/home" title="尚品汇">
+          <img src="./images/logo.png" alt=""
+        /></router-link>
+        <!-- <a class="logo" title="尚品汇" href="###" target="_blank">
           <img src="./images/logo.png" alt="" />
-        </a>
+        </a> -->
       </h1>
       <div class="searchArea">
         <form action="###" class="searchForm">
           <input
+            v-model="keyword"
             type="text"
             id="autocomplete"
             class="input-error input-xxlarge"
           />
-          <button class="sui-btn btn-xlarge btn-danger" type="button">
+          <button class="sui-btn btn-xlarge btn-danger" type="button" @click="toSearch">
             搜索
           </button>
         </form>
@@ -49,6 +56,23 @@
 <script>
 export default {
   name: "",
+  data() {
+    return {
+      keyword:''
+    }
+  },
+  methods: {
+    toSearch(){
+      // this.$router.push('/search/' + this.keyword + '?keyword1=' + this.keyword.toUpperCase())
+      // this.$router.push(`/search/${this.keyword}?keyword1=${this,this.keyword.toUpperCase()}`)
+      this.$router.push({
+        name:'search',
+        params:{keyword:this.keyword},
+        query:{keyword1:this.keyword.toUpperCase()}
+      })
+      this.keyword = ''
+    }
+  },
 };
 </script>
 

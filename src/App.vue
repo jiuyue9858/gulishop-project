@@ -1,7 +1,8 @@
 <template>
   <div>
-    <Header></Header>
-    <Footer></Footer>
+      <Header></Header>
+      <router-view></router-view>
+      <Footer></Footer>
   </div>
 </template>
 
@@ -12,8 +13,8 @@ import Footer from '@/components/Footer'
 export default {
   name: '',
   components:{
-    Header,
-    Footer
+      Header,
+      Footer
   }
 }
 </script>
