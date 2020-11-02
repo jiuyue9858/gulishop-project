@@ -55,7 +55,7 @@
 
 <script>
 export default {
-  name: "",
+  name: "Header",
   data() {
     return {
       keyword:''
@@ -65,12 +65,23 @@ export default {
     toSearch(){
       // this.$router.push('/search/' + this.keyword + '?keyword1=' + this.keyword.toUpperCase())
       // this.$router.push(`/search/${this.keyword}?keyword1=${this,this.keyword.toUpperCase()}`)
-      this.$router.push({
-        name:'search',
-        params:{keyword:this.keyword},
-        query:{keyword1:this.keyword.toUpperCase()}
-      })
-      this.keyword = ''
+      // this.$router.push({
+      //   name:'search',
+      //   params:{keyword:this.keyword||undefined},
+      //   query:{keyword1:this.keyword.toUpperCase()}
+      // })
+      // this.keyword = ''
+
+      let location = {
+        name:"search",
+        params:{
+          keyword:this.keyword,
+        }
+      }
+      if(this.$route.query){
+        location.query = this.$route.query
+      }
+      this.$router.push(location)
     }
   },
 };
