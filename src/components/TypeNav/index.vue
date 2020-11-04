@@ -156,7 +156,10 @@ export default {
     };
   },
   mounted() {
-    this.getCategoryList();
+    // this.getCategoryList();
+    if (this.$route.path !== "/home") {
+      this.isShow = false;
+    }
   },
   methods: {
     //   封装成函数后期使用方便调用
@@ -185,7 +188,7 @@ export default {
     },
     toSearch(event){
         let target = event.target;
-        let data = target.dataset
+        let data = target.dataset;
         let {categoryname,category1id,category2id,category3id} = data
         if (categoryname){
             let location = {
@@ -196,7 +199,7 @@ export default {
             }
             if(category1id){
                 query.category1Id = category1id
-            }else if(category2Id){
+            }else if(category2id){
                 query.category2Id = category2id
             }else{
                 query.category3Id = category3id

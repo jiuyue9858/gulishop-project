@@ -9,6 +9,8 @@ const getters = {}
 
 import home from './home'
 import users from './users'
+import search from './search'
+
 export default new Vuex.Store({
     state,
     mutations,
@@ -16,6 +18,7 @@ export default new Vuex.Store({
     getters,
     modules:{
         home,
-        users
+        users,
+        search
     }
 })

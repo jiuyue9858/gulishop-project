@@ -61,6 +61,9 @@ export default {
       keyword:''
     }
   },
+  mounted(){
+    this.$bus.$on('clearKeyword',this.clearKeyword)
+  },
   methods: {
     toSearch(){
       // this.$router.push('/search/' + this.keyword + '?keyword1=' + this.keyword.toUpperCase())
@@ -82,6 +85,9 @@ export default {
         location.query = this.$route.query
       }
       this.$router.push(location)
+    },
+    clearKeyword(){
+      this.keyword = ''
     }
   },
 };
