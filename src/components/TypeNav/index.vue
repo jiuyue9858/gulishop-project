@@ -3,7 +3,8 @@
     <div class="container">
       <div @mouseleave="moveDivOut" @mouseenter="isShow = true">
         <h2 class="all">全部商品分类</h2>
-        <div class="sort" v-show="isShow">
+        <transition name="sort">
+          <div class="sort" v-show="isShow">
           <div class="all-sort-list2" @click="toSearch">
               <!-- <h2>嘿嘿</h2> -->
             <div
@@ -127,6 +128,7 @@
             </div>
           </div>
         </div>
+        </transition>
       </div>
       <nav class="nav">
         <a href="###">服装城</a>
@@ -208,7 +210,11 @@ export default {
             if(this.$route.params){
                 location.params = this.$route.params
             }
-            this.$router.push(location);
+            if(this.$route.params !== '/home'){
+              this.$router.replace(location)//从search跳转search用replace不保留历史记录
+            }else{
+              this.$router.push(location)//从home跳转search用push保留历史记录
+            }
         }
     }
   },
@@ -273,9 +279,24 @@ export default {
       width: 210px;
       height: 461px;
       position: absolute;
-      background: #fafafa;
+      background: #9b85ce;
       z-index: 999;
 
+      &.sort-enter{
+        opacity:0;
+        height: 0;
+      }
+
+      &.sort-enter-active{
+        transition: all .5s;
+      }
+
+      &.sort-enter-to{
+        opacity:1;
+        height: 461px;
+      }
+
+        
       .all-sort-list2 {
         .item {
           h3 {

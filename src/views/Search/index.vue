@@ -43,23 +43,34 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <!-- 1:desc综合降序  1:asc综合升序  2:desc价格降序  2:asc价格升序 -->
+                <!-- 1代表综合 -->
+                <li :class="{ active: sortFlag === '1' }">
+                  <a href="javascript:;" @click="sortGoods('1')"
+                    >综合
+                    <i
+                      v-if="sortFlag === '1'"
+                      class="iconfont icondown"
+                      :class="{
+                        icondown: sortType === 'desc',
+                        iconup: sortType === 'asc',
+                      }"
+                    ></i>
+                  </a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <!-- 2代表是价格 -->
+                <li :class="{ active: sortFlag === '2' }">
+                  <a href="javascript:;" @click="sortGoods('2')"
+                    >价格
+                    <i
+                      v-if="sortFlag === '2'"
+                      class="iconfont"
+                      :class="{
+                        icondown: sortType === 'desc',
+                        iconup: sortType === 'asc',
+                      }"
+                    ></i>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -111,35 +122,13 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination
+            :currentPageNum="searchParams.pageNo"
+            :pageSize="searchParams.pageSize"
+            :total="goodsListInfo.total"
+            :continueNum="5"
+            @changeNum="changeNum"
+          ></Pagination>
         </div>
       </div>
     </div>
@@ -147,7 +136,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import SearchSelector from "./SearchSelector/SearchSelector";
 export default {
   name: "Search",
@@ -186,7 +175,7 @@ export default {
         keyword: "",
         order: "1:desc", //排序用的
         pageNo: 1, //初始化number为1
-        pageSize: 2, //一页两个
+        pageSize: 1, //一页两个
         props: [],
         trademark: "",
       },
@@ -236,27 +225,39 @@ export default {
         category3Id,
         keyword,
       }; //同名属性后面赋值会覆盖前面的
+
+      // 把最终参数当中是空串的属性去掉,因为没必要还占带宽
+      Object.keys(searchParams).forEach((item) => {
+        if (searchParams[item] === "") {
+          delete searchParams[item];
+        }
+      });
+      searchParams.pageNo = 1
       this.searchParams = searchParams;
     },
     // 删除面包屑类名
     removeCategoryName() {
+      this.searchParams.pageNo = 1
       // this.searchParams.categoryName = undefined
       delete this.searchParams.categoryName;
       this.getGoodsListInfo(); //发请求 直接dispatch去发请求,不会去更改路径,因此我们要手动去修改路径并且发送请求
-      this.$router.push({ name: "search", params: this.$route.params });
+      // this.$router.push({ name: "search", params: this.$route.params });
       let location = { name: "search", params: this.$route.params };
-      this.$router.push(location);
+      // this.$router.push(location);
+      this.$router.replace(location);
       // push本身用来跳转路由,而dispatch是发请求的,本身并不能改变路由
       // 我们先通过push跳转路由改变路径  然后下面的watch就会监视到路由对象的变化,然后在监视当中我们通过dispatch发送请求
     },
     // 删除面包屑关键字
     removeKeyword() {
+      this.searchParams.pageNo = 1
       delete this.searchParams.keyword;
       this.$bus.$emit("clearKeyword");
       let location = { name: "search", query: this.$route.query };
-      this.$router.push(location);
+      this.$router.replace(location); 
     },
     searchForTrademark(trademark) {
+      this.searchParams.pageNo = 1
       //获取到子组件传递过来的trademark对象，拼接成参数所需要的格式
       let trademarkInfo = `${trademark.tmId}:${trademark.tmName}`;
       //修改搜索参数发请求
@@ -265,11 +266,13 @@ export default {
     },
     //删除面包屑的品牌
     removeTrademark() {
+      this.searchParams.pageNo = 1
       this.searchParams.trademark = undefined;
       this.getGoodsListInfo();
     },
     //根据属性搜索
     searchForAttrs(attr, attrValue) {
+      this.searchParams.pageNo = 1
       let prop = `${attr.attrId}:${attrValue}:${attr.attrName}`;
 
       //some every
@@ -283,12 +286,46 @@ export default {
     },
     //删除面包屑的属性
     removeProp(index) {
+      this.searchParams.pageNo = 1
       this.searchParams.props.splice(index, 1);
       this.getGoodsListInfo();
     },
+    // 排序商品  按照综合/价格
+    // sortFlag形参  传来的真实数据是字符串'1'/'2'
+    sortGoods(sortFlag) {
+      //获取原来的排序规则(排序标志/排序类型)
+      let originSortFlag = sortFlag;
+      let originSortType = sortType;
+      let newOrder = "";
+
+      // 判断点击传递过来的标志是否和原来的排序标志一样
+      if (sortFlag === originSortFlag) {
+        newOrder = `${originSortFlag}:${
+          originSortType === "desc" ? "asc" : "desc"
+        }`;
+      } else {
+        newOrder = `${sortFlag}:desc`;
+      }
+      this.searchParams.pageNo = 1
+      this.searchParams.order = newOrder;
+      this.getGoodsListInfo(); //重新发送请求  否则综合/价格之间可以切换,点击相同的升序降序也可以切换,但是下面的数据不会变化
+    },
+    changeNum(page){
+      this.searchParams.pageNo = page
+      this.getGoodsListInfo()
+    }
   },
   computed: {
     ...mapGetters(["goodsList"]),
+    ...mapState({
+      goodsListInfo:state => state.search.goodsListInfo
+    }),
+    sortFlag() {
+      this.searchParams.order.split(":")[0];
+    },
+    sortType() {
+      this.searchParams.order.split(":")[1];
+    },
   },
   components: {
     SearchSelector,

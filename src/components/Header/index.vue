@@ -44,7 +44,11 @@
             id="autocomplete"
             class="input-error input-xxlarge"
           />
-          <button class="sui-btn btn-xlarge btn-danger" type="button" @click="toSearch">
+          <button
+            class="sui-btn btn-xlarge btn-danger"
+            type="button"
+            @click="toSearch"
+          >
             搜索
           </button>
         </form>
@@ -58,14 +62,14 @@ export default {
   name: "Header",
   data() {
     return {
-      keyword:''
-    }
+      keyword: "",
+    };
   },
-  mounted(){
-    this.$bus.$on('clearKeyword',this.clearKeyword)
+  mounted() {
+    this.$bus.$on("clearKeyword", this.clearKeyword);
   },
   methods: {
-    toSearch(){
+    toSearch() {
       // this.$router.push('/search/' + this.keyword + '?keyword1=' + this.keyword.toUpperCase())
       // this.$router.push(`/search/${this.keyword}?keyword1=${this,this.keyword.toUpperCase()}`)
       // this.$router.push({
@@ -76,19 +80,23 @@ export default {
       // this.keyword = ''
 
       let location = {
-        name:"search",
-        params:{
-          keyword:this.keyword,
-        }
+        name: "search",
+        params: {
+          keyword: this.keyword,
+        },
+      };
+      if (this.$route.query) {
+        location.query = this.$route.query;
       }
-      if(this.$route.query){
-        location.query = this.$route.query
+      if (this.$route.params !== "/home") {
+        this.$router.replace(location); //从search跳转search用replace不保留历史记录
+      } else {
+        this.$router.push(location); //从home跳转search用push保留历史记录
       }
-      this.$router.push(location)
     },
-    clearKeyword(){
-      this.keyword = ''
-    }
+    clearKeyword() {
+      this.keyword = "";
+    },
   },
 };
 </script>
