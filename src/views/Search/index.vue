@@ -84,9 +84,12 @@
               >
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank"
+                    <router-link :to="'/detail/' + goods.id"
+                      ><img v-lazy="goods.defaultImg"
+                    /></router-link>
+                    <!-- <a href="item.html" target="_blank"
                       ><img :src="goods.defaultImg"
-                    /></a>
+                    /></a> -->
                   </div>
                   <div class="price">
                     <strong>
@@ -95,14 +98,14 @@
                     </strong>
                   </div>
                   <div class="attr">
-                    <a
+                    <router-link :to="'/detail/' + goods.id"
+                      >{{goods.title}}</router-link>
+                    <!-- <a
                       target="_blank"
                       href="item.html"
                       title="促销信息，下单即赠送三个月CIBN视频会员卡！【小米电视新品4A 58 火爆预约中】"
-                      >Apple苹果iPhone 6s (A1699)Apple苹果iPhone 6s
-                      (A1699)Apple苹果iPhone 6s (A1699)Apple苹果iPhone 6s
-                      (A1699)</a
-                    >
+                      >{{goods.title}}</a
+                    > -->
                   </div>
                   <div class="commit">
                     <i class="command">已有<span>2000</span>人评价</i>
@@ -232,12 +235,12 @@ export default {
           delete searchParams[item];
         }
       });
-      searchParams.pageNo = 1
+      searchParams.pageNo = 1;
       this.searchParams = searchParams;
     },
     // 删除面包屑类名
     removeCategoryName() {
-      this.searchParams.pageNo = 1
+      this.searchParams.pageNo = 1;
       // this.searchParams.categoryName = undefined
       delete this.searchParams.categoryName;
       this.getGoodsListInfo(); //发请求 直接dispatch去发请求,不会去更改路径,因此我们要手动去修改路径并且发送请求
@@ -250,14 +253,14 @@ export default {
     },
     // 删除面包屑关键字
     removeKeyword() {
-      this.searchParams.pageNo = 1
+      this.searchParams.pageNo = 1;
       delete this.searchParams.keyword;
       this.$bus.$emit("clearKeyword");
       let location = { name: "search", query: this.$route.query };
-      this.$router.replace(location); 
+      this.$router.replace(location);
     },
     searchForTrademark(trademark) {
-      this.searchParams.pageNo = 1
+      this.searchParams.pageNo = 1;
       //获取到子组件传递过来的trademark对象，拼接成参数所需要的格式
       let trademarkInfo = `${trademark.tmId}:${trademark.tmName}`;
       //修改搜索参数发请求
@@ -266,13 +269,13 @@ export default {
     },
     //删除面包屑的品牌
     removeTrademark() {
-      this.searchParams.pageNo = 1
+      this.searchParams.pageNo = 1;
       this.searchParams.trademark = undefined;
       this.getGoodsListInfo();
     },
     //根据属性搜索
     searchForAttrs(attr, attrValue) {
-      this.searchParams.pageNo = 1
+      this.searchParams.pageNo = 1;
       let prop = `${attr.attrId}:${attrValue}:${attr.attrName}`;
 
       //some every
@@ -286,7 +289,7 @@ export default {
     },
     //删除面包屑的属性
     removeProp(index) {
-      this.searchParams.pageNo = 1
+      this.searchParams.pageNo = 1;
       this.searchParams.props.splice(index, 1);
       this.getGoodsListInfo();
     },
@@ -306,19 +309,19 @@ export default {
       } else {
         newOrder = `${sortFlag}:desc`;
       }
-      this.searchParams.pageNo = 1
+      this.searchParams.pageNo = 1;
       this.searchParams.order = newOrder;
       this.getGoodsListInfo(); //重新发送请求  否则综合/价格之间可以切换,点击相同的升序降序也可以切换,但是下面的数据不会变化
     },
-    changeNum(page){
-      this.searchParams.pageNo = page
-      this.getGoodsListInfo()
-    }
+    changeNum(page) {
+      this.searchParams.pageNo = page;
+      this.getGoodsListInfo();
+    },
   },
   computed: {
     ...mapGetters(["goodsList"]),
     ...mapState({
-      goodsListInfo:state => state.search.goodsListInfo
+      goodsListInfo: (state) => state.search.goodsListInfo,
     }),
     sortFlag() {
       this.searchParams.order.split(":")[0];
